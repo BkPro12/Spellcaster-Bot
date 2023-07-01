@@ -1,15 +1,4 @@
 /**
- * List key:
- * 
- * hp
- * 
- * fire immunity
- * 
- * ice immunity
- * 
- * paralysed
- */
-/**
  * Gesture Code:
  * 
  * F=1
@@ -80,51 +69,7 @@
  * 
  * W-W-F-P         Resist heat
  */
-function Spell_Check (Left_hand_array: string, Right_hand_array: string) {
-    basic.clearScreen()
-    for (let index = 0; index <= Left_hand_array.length; index++) {
-        Spellchecker = "" + Left_hand_array[index] + Spellchecker
-        for (let index = 0; index <= Spellbook.length; index++) {
-            if (Spellbook[index] == Spellchecker) {
-                Translator()
-                if (Left_hand_array == "Player History 1" && Right_hand_array == "Player History 2") {
-                    basic.showString("Use " + TEXT + "?")
-                    while (true) {
-                        basic.showString("?")
-                        if (input.buttonIsPressed(Button.A)) {
-                        	
-                        }
-                        if (input.buttonIsPressed(Button.B)) {
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-    }
-    for (let index = 0; index <= Player_History_2.length; index++) {
-        Spellchecker = "" + Player_History_1[index] + Spellchecker
-        for (let index = 0; index <= Spellbook.length; index++) {
-            if (Spellbook[index] == Spellchecker) {
-                Translator()
-                if (Left_hand_array == "Player History 1" && Right_hand_array == "Player History 2") {
-                    basic.showString("Use " + TEXT + "?")
-                    while (true) {
-                        basic.showString("?")
-                        if (input.buttonIsPressed(Button.A)) {
-                        	
-                        }
-                        if (input.buttonIsPressed(Button.B)) {
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
 function Player_Choose_Move () {
-    let list: number[] = []
     index = 0
     basic.showString("L")
     basic.pause(500)
@@ -187,7 +132,44 @@ function Player_Choose_Move () {
             basic.showString("C")
         }
     }
-    Spell_Check(list, list)
+    Spell_Check_Player()
+}
+/**
+ * List key:
+ * 
+ * Hp
+ * 
+ * fire immunity
+ * 
+ * ice immunity
+ * 
+ * paralyzed
+ * 
+ * monster 1?
+ * 
+ * M1 Type?
+ * 
+ * Monster 2?
+ * 
+ * M2 Type?
+ * 
+ * Bot only:
+ * 
+ * Spell to use + place in spell
+ * 
+ * Using binary
+ * 
+ * for m1/m2
+ */
+function Bot_perform_gesture (hand: string[], num: number) {
+    hand.unshift(Bot_History_1[8].charAt(0))
+}
+function Bot_Choose_Move () {
+    if (Bot_History_1.length < 2) {
+        Place_in_spell_Bot = 1
+        Bot[8] = Spellbook._pickRandom()
+        Bot_perform_gesture(Bot_History_1, Place_in_spell_Bot)
+    }
 }
 function Show_Display () {
     led.plotBrightness(1, 2, 230)
@@ -220,6 +202,47 @@ function Show_Display () {
     	
     }
     Player_Choose_Move()
+}
+function Spell_Check_Player () {
+    basic.clearScreen()
+    for (let index = 0; index <= Player_History_1.length; index++) {
+        Spellchecker = "" + Player_History_1[index] + Spellchecker
+        for (let index = 0; index <= Spellbook.length; index++) {
+            if (Spellbook[index] == Spellchecker) {
+                Translator()
+                basic.showString("Use " + TEXT + "?")
+                while (true) {
+                    basic.showString("?")
+                    if (input.buttonIsPressed(Button.A)) {
+                        basic.showString("On?")
+                        TEXT = "W"
+                        while (true) {
+                            basic.showString(TEXT)
+                            if (input.buttonIsPressed(Button.A)) {
+                                if (TEXT == "W") {
+                                    if (Player[5] == 1) {
+                                        TEXT = "M1"
+                                    }
+                                } else if (TEXT == "M1") {
+                                    if (Player[7] == 1) {
+                                        TEXT = "M2"
+                                    }
+                                } else {
+                                    TEXT = "W"
+                                }
+                            }
+                        }
+                    }
+                    if (input.buttonIsPressed(Button.B)) {
+                        for (let index2 = 0; index2 < Spellchecker.length - 1; index2++) {
+                            Player_History_1.shift()
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+    }
 }
 function Translator () {
     TEXT = ""
@@ -274,9 +297,12 @@ function Translator () {
     }
 }
 let Spellchecker = ""
+let Place_in_spell_Bot = 0
+let Bot_History_1: string[] = []
 let Player_History_2: number[] = []
 let Player_History_1: number[] = []
 let Spellbook: string[] = []
+let Bot: string[] = []
 let Player: number[] = []
 let TEXT = ""
 let index = 0
@@ -286,13 +312,22 @@ Player = [
 15,
 0,
 0,
+0,
+0,
+0,
+0,
 0
 ]
-let Bot = [
-15,
-0,
-0,
-0
+Bot = [
+"15",
+"0",
+"0",
+"0",
+"0",
+"0",
+"0",
+"0",
+"0"
 ]
 Spellbook = [
 "6524",
@@ -321,6 +356,6 @@ Spellbook = [
 ]
 Player_History_1 = []
 Player_History_2 = []
-let Bot_History_1: number[] = []
+Bot_History_1 = []
 let Bot_History_2: number[] = []
 Show_Display()
